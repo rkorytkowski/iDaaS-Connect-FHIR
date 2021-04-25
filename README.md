@@ -1,5 +1,5 @@
-# Open-iDaaS-Connect-FHIR
-iDAAS has several key components that provide many capabilities. iDAAS Connect is intended ONLY
+# iDaaS Connect FHIR
+This is the upstream for RedHat Healthcare's <a href="https://github.com/RedHat-Healthcare/iDaaS-Connect/tree/master/iDaaS-Connect-FHIR" target="_blank">iDaaS Connect FHIR</a>. iDAAS has several key components that provide many capabilities. iDAAS Connect is intended ONLY
 to enable iDAAS connectivity. iDAAS-Connect-FHIR specifically ONLY deals with enabling 
 iDAAS to process the healthcare industry standard FHIR based resources ONLY. Here is the 
 <a href="https://www.hl7.org/fhir/resourcelist.html" target="_blank">current FHIR Resource List</a> 
