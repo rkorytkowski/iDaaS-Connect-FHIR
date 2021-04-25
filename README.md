@@ -10,9 +10,8 @@ reporting and testing resources. You can also find a list of the
 
 This solution contains three supporting directories. The intent of these artifacts to enable
 resources to work locally: <br/>
-1. platform-addons: needed software to run locally. This currently contains Kafka 2.6)<br/>
-2. platform-scripts: support running kafka, building and running the solution as well. All the scripts are named to describe their capabilities <br/>
-3. platform-testdata: sample transactions to leverage for using the platform. 
++ platform-scripts: support running kafka, building and running the solution as well. All the scripts are named to describe their capabilities <br/>
++ platform-testdata: sample transactions to leverage for using the platform. 
 
 For this particular repository it has been tested and works with multiple FHIR servers. <br/>
 <a href="https://github.com/hapifhir/hapi-fhir-jpaserver-starter" target="_blank">HAPI FHIR JPA Server</a><br/> 
