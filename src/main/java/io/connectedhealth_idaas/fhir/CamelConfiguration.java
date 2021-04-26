@@ -32,6 +32,7 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
+
 //import org.springframework.jms.connection.JmsTransactionManager;
 //import javax.jms.ConnectionFactory;
 import org.springframework.stereotype.Component;
@@ -99,7 +100,35 @@ public class CamelConfiguration extends RouteBuilder {
    */
   @Override
   public void configure() throws Exception {
-
+    /*
+     *   HIDN
+     *   HIDN - Health information Data Network
+     *   Intended to enable simple movement of data aside from specific standards
+     *   Common Use Cases are areas to support remote (iOT/Edge) and any other need for small footprints to larger
+     *   footprints
+     * : Unstructured data, st
+     */
+    from("direct:hidn")
+         .setHeader("messageprocesseddate").simple("${date:now:yyyy-MM-dd}")
+         .setHeader("messageprocessedtime").simple("${date:now:HH:mm:ss:SSS}")
+         .setHeader("eventdate").simple("eventdate")
+         .setHeader("eventtime").simple("eventtime")
+         .setHeader("processingtype").exchangeProperty("processingtype")
+         .setHeader("industrystd").exchangeProperty("industrystd")
+         .setHeader("component").exchangeProperty("componentname")
+         .setHeader("processname").exchangeProperty("processname")
+         .setHeader("organization").exchangeProperty("organization")
+         .setHeader("careentity").exchangeProperty("careentity")
+         .setHeader("customattribute1").exchangeProperty("customattribute1")
+         .setHeader("customattribute2").exchangeProperty("customattribute2")
+         .setHeader("customattribute3").exchangeProperty("customattribute3")
+         .setHeader("camelID").exchangeProperty("camelID")
+         .setHeader("exchangeID").exchangeProperty("exchangeID")
+         .setHeader("internalMsgID").exchangeProperty("internalMsgID")
+         .setHeader("bodyData").exchangeProperty("bodyData")
+         .setHeader("bodySize").exchangeProperty("bodySize")
+         .convertBodyTo(String.class).to(getKafkaTopicUri("hidn"))
+    ;
     /*
      * Audit
      *
@@ -134,8 +163,99 @@ public class CamelConfiguration extends RouteBuilder {
     ;
 
     /*
+    *   General iDaaS Platform
+    */
+    from("servlet://hidn")
+        .routeId("HIDN")
+         // Data Parsing and Conversions
+         // Normal Processing
+        .convertBodyTo(String.class)
+        .setHeader("messageprocesseddate").simple("${date:now:yyyy-MM-dd}")
+        .setHeader("messageprocessedtime").simple("${date:now:HH:mm:ss:SSS}")
+        .setHeader("eventdate").simple("eventdate")
+        .setHeader("eventtime").simple("eventtime")
+        .setHeader("processingtype").exchangeProperty("processingtype")
+        .setHeader("industrystd").exchangeProperty("industrystd")
+        .setHeader("component").exchangeProperty("componentname")
+        .setHeader("processname").exchangeProperty("processname")
+        .setHeader("organization").exchangeProperty("organization")
+        .setHeader("careentity").exchangeProperty("careentity")
+        .setHeader("customattribute1").exchangeProperty("customattribute1")
+        .setHeader("customattribute2").exchangeProperty("customattribute2")
+        .setHeader("customattribute3").exchangeProperty("customattribute3")
+        .setHeader("camelID").exchangeProperty("camelID")
+        .setHeader("exchangeID").exchangeProperty("exchangeID")
+        .setHeader("internalMsgID").exchangeProperty("internalMsgID")
+        .setHeader("bodyData").exchangeProperty("bodyData")
+        .setHeader("bodySize").exchangeProperty("bodySize")
+        .wireTap("direct:hidn")
+    ;
+
+    /*
      *  Any endpoint defined would be managed by access http(s)://<servername>:<serverport>/<resource name>
      */
+
+    /*
+     *  Binary Resource Upload
+     */
+    from("servlet://binary")
+            .routeId("FHIRBinary")
+            .convertBodyTo(String.class)
+            // set Auditing Properties
+            .setProperty("processingtype").constant("data")
+            .setProperty("appname").constant("iDAAS-Connect-FHIR")
+            .setProperty("messagetrigger").constant("Binary")
+            .setProperty("component").simple("${routeId}")
+            .setProperty("camelID").simple("${camelId}")
+            .setProperty("exchangeID").simple("${exchangeId}")
+            .setProperty("internalMsgID").simple("${id}")
+            .setProperty("bodyData").simple("${body}")
+            .setProperty("processname").constant("Input")
+            .setProperty("auditdetails").constant("Binary resource/bundle received")
+            // iDAAS DataHub Processing
+            .wireTap("direct:auditing")
+            // Send To Topic
+            .convertBodyTo(String.class).to(getKafkaTopicUri("fhirsvr_binary"))
+            // Unmarshal with FHIR
+            // need to add the FHIR centric Marshal imports
+            //.unmarshal().fhir()
+            // Send To Topic
+            //.convertBodyTo(String.class).to(getKafkaTopicUri("fhirsvr_binaryuncompressed"))
+            // Audit UnMarshal Event
+            // set Auditing Properties
+            .setProperty("processingtype").constant("data")
+            .setProperty("appname").constant("iDAAS-Connect-FHIR")
+            .setProperty("industrystd").constant("FHIR")
+            .setProperty("messagetrigger").constant("Binary")
+            .setProperty("component").simple("${routeId}")
+            .setProperty("processname").constant("Response")
+            .setProperty("camelID").simple("${camelId}")
+            .setProperty("exchangeID").simple("${exchangeId}")
+            .setProperty("internalMsgID").simple("${id}")
+            .setProperty("bodyData").simple("${body}")
+            .setProperty("auditdetails").constant("Binary UnMarshall Activity")
+            // iDAAS DataHub Processing
+            .wireTap("direct:auditing")// Invoke External FHIR Server
+            // Send to FHIR Server
+            .setHeader(Exchange.CONTENT_TYPE,constant("application/json"))
+            .to(getFHIRServerUri("Binary"))
+            //Process Response
+            .convertBodyTo(String.class)
+            // set Auditing Properties
+            .setProperty("processingtype").constant("data")
+            .setProperty("appname").constant("iDAAS-Connect-FHIR")
+            .setProperty("industrystd").constant("FHIR")
+            .setProperty("messagetrigger").constant("Binary")
+            .setProperty("component").simple("${routeId}")
+            .setProperty("processname").constant("Response")
+            .setProperty("camelID").simple("${camelId}")
+            .setProperty("exchangeID").simple("${exchangeId}")
+            .setProperty("internalMsgID").simple("${id}")
+            .setProperty("bodyData").simple("${body}")
+            .setProperty("auditdetails").constant("Binary response resource/bundle received")
+            // iDAAS DataHub Processing
+            .wireTap("direct:auditing")// Invoke External FHIR Server
+    ;
 
     /*
      *  Clinical FHIR
