@@ -219,9 +219,8 @@ public class CamelConfiguration extends RouteBuilder {
             // Unmarshal with FHIR
             // need to add the FHIR centric Marshal imports
             //.unmarshal().fhir()
-            // Send To Topic
+            // Audit UnMarshal Event - Send To Topic
             //.convertBodyTo(String.class).to(getKafkaTopicUri("fhirsvr_binaryuncompressed"))
-            // Audit UnMarshal Event
             // set Auditing Properties
             .setProperty("processingtype").constant("data")
             .setProperty("appname").constant("iDAAS-Connect-FHIR")
