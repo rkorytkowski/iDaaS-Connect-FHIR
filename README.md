@@ -1,5 +1,3 @@
-We are currently working thtough some issues with errors preventing Camel from running as a SpringBoot application. The community is working on it and we apologize for the inconvenience. Please feel free to look at https://github.com/RedHat-Healthcare/iDaaS-Connect. This solution upstream continues to run.
-
 # iDaaS Connect FHIR
 This is the upstream for RedHat Healthcare's <a href="https://github.com/RedHat-Healthcare/iDaaS-Connect/tree/master/iDaaS-Connect-FHIR" target="_blank">iDaaS Connect FHIR</a>. iDAAS has several key components that provide many capabilities. iDAAS Connect is intended ONLY
 to enable iDAAS connectivity. iDAAS-Connect-FHIR specifically ONLY deals with enabling 
