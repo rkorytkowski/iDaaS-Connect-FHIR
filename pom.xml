@@ -85,6 +85,11 @@
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-bean</artifactId>
         </dependency>
+        <!-- Jetty -->
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-jetty</artifactId>
+        </dependency>
         <!-- Logging -->
         <dependency>
             <groupId>org.slf4j</groupId>
