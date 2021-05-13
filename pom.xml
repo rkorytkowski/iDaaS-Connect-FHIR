@@ -85,10 +85,10 @@
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-bean</artifactId>
         </dependency>
-        <!-- Jetty -->
+        <!-- Http -->
         <dependency>
             <groupId>org.apache.camel</groupId>
-            <artifactId>camel-jetty</artifactId>
+            <artifactId>camel-http</artifactId>
         </dependency>
         <!-- Logging -->
         <dependency>
